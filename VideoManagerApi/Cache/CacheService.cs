@@ -8,10 +8,12 @@ namespace VideoManagerApi.Cache
     {
         private readonly IDistributedCache _cache;
         private readonly string _cacheKeyPrefix = "product_videos_";
+        private readonly ILogger<CacheService> _logger;
 
-        public CacheService(IDistributedCache cache)
+        public CacheService(IDistributedCache cache, ILogger<CacheService> logger)
         {
             _cache = cache;
+            _logger = logger;
         }
 
         public async Task<T> GetFromCache<T>(string cacheKey)
