@@ -6,7 +6,7 @@ namespace VideoManagerApi.Models
     public class Video
     {
         [Key]
-        public int VideoId { get; set; }
+        public int Id { get; set; }
         [Required]
         public string VideoName { get; set; } 
         

@@ -4,7 +4,7 @@ using VideoManagerApi.Models;
 
 namespace VideoManagerApi.Repositories
 {
-    public class ProductVideoRepository : IProductVideoRepository
+    public class ProductVideoRepository 
     {
         private readonly ProductVideoContext _dbContext;
 
@@ -13,15 +13,16 @@ namespace VideoManagerApi.Repositories
             _dbContext = context;
         }
 
-        public async Task AddVideo(Video video)
+        public async Task AddVideoAsync(int productId, Video video)
         {
+            video.ProductId = productId;
             _dbContext.Videos.Add(video);
             await _dbContext.SaveChangesAsync();
         }
 
-        public async Task DeleteVideo(int id)
+        public async Task DeleteVideoAsync(int videoId)
         {
-            var video = await _dbContext.Videos.FirstOrDefaultAsync(x => x.VideoId == id);
+            var video = await _dbContext.Videos.FindAsync(videoId);
             if(video != null)
             {
                 _dbContext.Videos.Remove(video);
@@ -29,9 +30,25 @@ namespace VideoManagerApi.Repositories
             }
         }
 
-        public async Task<IEnumerable<Video>> GetAllVideosAsync(int id)
+        public async Task DeleteVideoAsync(int productId, int videoId)
         {
-            return await _dbContext.Videos.ToListAsync();
+            var product = await _dbContext.Products.Include(p => p.Videos).FirstOrDefaultAsync(p => p.Id == productId);
+            if(product != null)
+            {
+                var video =  product?.Videos.Find(p => p.Id == videoId);
+                if (video != null)
+                {
+                    _dbContext.Videos.Remove(video);
+                    await _dbContext.SaveChangesAsync();
+                }
+            }
+            
+        }
+
+        public async Task<IEnumerable<Video>> GetAllVideosAsync(int productId)
+        {
+            var product = await _dbContext.Products.Include(p => p.Videos).FirstOrDefaultAsync(p => p.Id == productId);
+            return product?.Videos;
         }
     }
 }
