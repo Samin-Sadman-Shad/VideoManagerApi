@@ -20,29 +20,37 @@ namespace VideoManagerApi.Repositories
 
         public async Task<Product> GetProductAsync(int productId)
         {
-            return await _dbContext.Products.FindAsync(productId);
+            var product = await _dbContext.Products.FindAsync(productId);
+            return product;
         }
 
-        public async Task AddProductAsync(Product product)
+        public async Task<Product> AddProductAsync(Product product)
         {
-            _dbContext.Products.Add(product);
+            _dbContext.Products.Entry(product).State = EntityState.Added;
+            //_dbContext.Products.Add(product);
             await _dbContext.SaveChangesAsync();
+            return product;
         }
 
-        public async Task UpdateProductAsync(Product updatedProduct)
+        public async Task<Product> UpdateProductAsync(Product updatedProduct)
         {
-            _dbContext.Entry(updatedProduct).State = EntityState.Modified;
+            //_dbContext.Entry(updatedProduct).State = EntityState.Modified;
+            var entity = _dbContext.Products.Attach(updatedProduct);
+            entity.State = EntityState.Modified;
             await _dbContext.SaveChangesAsync();
+            return updatedProduct;
         }
 
-        public async Task DeleteProductAsync(int productId)
+        public async Task<Product> DeleteProductAsync(int productId)
         {
             var product = await _dbContext.Products.FindAsync(productId);
+            _dbContext.Products.Remove(product);
+            await _dbContext.SaveChangesAsync();
             if (product != null)
             {
-                _dbContext.Products.Remove(product);
-                await _dbContext.SaveChangesAsync();
+
             }
+            return product;
         }
     }
 }
