@@ -8,6 +8,8 @@ namespace VideoManagerApi.Data
         public DbSet<Product> Products { get; set; }
         public DbSet<Video> Videos { get; set; }
 
+        public DbSet<User> Users { get; set; }
+
         public ProductVideoContext(DbContextOptions<ProductVideoContext> options) : base(options) 
         {
 

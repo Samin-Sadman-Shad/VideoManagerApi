@@ -12,10 +12,12 @@ namespace VideoManagerApi.Controllers
     {
 
         private readonly ProductVideoContext _dbContext;
+        private readonly ILogger<ProductsController> _logger;
 
-        ProductsController(ProductVideoContext dbContext)
+        ProductsController(ProductVideoContext dbContext, ILogger<ProductsController> logger)
         {
             _dbContext = dbContext;
+            _logger = logger;
         }
 
 
@@ -25,6 +27,7 @@ namespace VideoManagerApi.Controllers
         public async Task<IActionResult> GetProducts()
         {
             var products = await _dbContext.Products.ToListAsync();
+            _logger.LogInformation("product created");
             return Ok(products);
         }
 
@@ -34,7 +37,11 @@ namespace VideoManagerApi.Controllers
         {
             var product = await _dbContext.Products.FindAsync(productId);
             if (product == null)
+            {
+                _logger.LogWarning($"Product with id {productId} not found");
                 return NotFound();
+            }
+
 
             return Ok(product);
         }
